@@ -3,4 +3,4 @@ project(Project04)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(Project04 main.cpp)
+add_executable(Project04 matrix.h matrix.c benchmark.c matmul.h matmul.c)
