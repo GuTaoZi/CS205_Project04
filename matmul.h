@@ -1,6 +1,7 @@
 #pragma once
 
 #include "matrix.h"
+#include <omp.h>
 
 bool safe_check(Matrix *src1, Matrix *src2, Matrix *dst);
 

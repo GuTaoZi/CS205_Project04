@@ -2,7 +2,9 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-#define float_equal(x, y) ((x-y)<1e-5&&(y-x)<1e-5)
+#include <stdio.h>
+#include <memory.h>
+#define float_equal(x, y) ((x-y)<1e-2&&(y-x)<1e-2)
 
 typedef struct Matrix_
 {
@@ -12,6 +14,8 @@ typedef struct Matrix_
 } Matrix;
 
 Matrix *createMat(size_t row, size_t col);
+
+Matrix *createMatFromArr(size_t row, size_t col,float *src);
 
 bool releaseMat(Matrix **pMatrix);
 
