@@ -1,10 +1,10 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/matmul.dir/benchmark.c.o"
-  "CMakeFiles/matmul.dir/benchmark.c.o.d"
-  "CMakeFiles/matmul.dir/matmul.c.o"
-  "CMakeFiles/matmul.dir/matmul.c.o.d"
-  "CMakeFiles/matmul.dir/matrix.c.o"
-  "CMakeFiles/matmul.dir/matrix.c.o.d"
+  "CMakeFiles/matmul.dir/src/benchmark.c.o"
+  "CMakeFiles/matmul.dir/src/benchmark.c.o.d"
+  "CMakeFiles/matmul.dir/src/matmul.c.o"
+  "CMakeFiles/matmul.dir/src/matmul.c.o.d"
+  "CMakeFiles/matmul.dir/src/matrix.c.o"
+  "CMakeFiles/matmul.dir/src/matrix.c.o.d"
   "matmul"
   "matmul.pdb"
 )

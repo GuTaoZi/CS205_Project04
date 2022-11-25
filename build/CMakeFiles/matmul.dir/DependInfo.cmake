@@ -8,9 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/mnt/e/Cpp/Project04/benchmark.c" "CMakeFiles/matmul.dir/benchmark.c.o" "gcc" "CMakeFiles/matmul.dir/benchmark.c.o.d"
-  "/mnt/e/Cpp/Project04/matmul.c" "CMakeFiles/matmul.dir/matmul.c.o" "gcc" "CMakeFiles/matmul.dir/matmul.c.o.d"
-  "/mnt/e/Cpp/Project04/matrix.c" "CMakeFiles/matmul.dir/matrix.c.o" "gcc" "CMakeFiles/matmul.dir/matrix.c.o.d"
+  "/mnt/e/Cpp/Project04/src/benchmark.c" "CMakeFiles/matmul.dir/src/benchmark.c.o" "gcc" "CMakeFiles/matmul.dir/src/benchmark.c.o.d"
+  "/mnt/e/Cpp/Project04/src/matmul.c" "CMakeFiles/matmul.dir/src/matmul.c.o" "gcc" "CMakeFiles/matmul.dir/src/matmul.c.o.d"
+  "/mnt/e/Cpp/Project04/src/matrix.c" "CMakeFiles/matmul.dir/src/matrix.c.o" "gcc" "CMakeFiles/matmul.dir/src/matrix.c.o.d"
   )
 
 # Targets to which this target links.

@@ -69,60 +69,60 @@ include CMakeFiles/matmul.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/matmul.dir/flags.make
 
-CMakeFiles/matmul.dir/matrix.c.o: CMakeFiles/matmul.dir/flags.make
-CMakeFiles/matmul.dir/matrix.c.o: ../matrix.c
-CMakeFiles/matmul.dir/matrix.c.o: CMakeFiles/matmul.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/Cpp/Project04/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/matmul.dir/matrix.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/matmul.dir/matrix.c.o -MF CMakeFiles/matmul.dir/matrix.c.o.d -o CMakeFiles/matmul.dir/matrix.c.o -c /mnt/e/Cpp/Project04/matrix.c
+CMakeFiles/matmul.dir/src/benchmark.c.o: CMakeFiles/matmul.dir/flags.make
+CMakeFiles/matmul.dir/src/benchmark.c.o: ../src/benchmark.c
+CMakeFiles/matmul.dir/src/benchmark.c.o: CMakeFiles/matmul.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/Cpp/Project04/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/matmul.dir/src/benchmark.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/matmul.dir/src/benchmark.c.o -MF CMakeFiles/matmul.dir/src/benchmark.c.o.d -o CMakeFiles/matmul.dir/src/benchmark.c.o -c /mnt/e/Cpp/Project04/src/benchmark.c
 
-CMakeFiles/matmul.dir/matrix.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/matmul.dir/matrix.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/e/Cpp/Project04/matrix.c > CMakeFiles/matmul.dir/matrix.c.i
+CMakeFiles/matmul.dir/src/benchmark.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/matmul.dir/src/benchmark.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/e/Cpp/Project04/src/benchmark.c > CMakeFiles/matmul.dir/src/benchmark.c.i
 
-CMakeFiles/matmul.dir/matrix.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/matmul.dir/matrix.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/e/Cpp/Project04/matrix.c -o CMakeFiles/matmul.dir/matrix.c.s
+CMakeFiles/matmul.dir/src/benchmark.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/matmul.dir/src/benchmark.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/e/Cpp/Project04/src/benchmark.c -o CMakeFiles/matmul.dir/src/benchmark.c.s
 
-CMakeFiles/matmul.dir/benchmark.c.o: CMakeFiles/matmul.dir/flags.make
-CMakeFiles/matmul.dir/benchmark.c.o: ../benchmark.c
-CMakeFiles/matmul.dir/benchmark.c.o: CMakeFiles/matmul.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/Cpp/Project04/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/matmul.dir/benchmark.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/matmul.dir/benchmark.c.o -MF CMakeFiles/matmul.dir/benchmark.c.o.d -o CMakeFiles/matmul.dir/benchmark.c.o -c /mnt/e/Cpp/Project04/benchmark.c
+CMakeFiles/matmul.dir/src/matmul.c.o: CMakeFiles/matmul.dir/flags.make
+CMakeFiles/matmul.dir/src/matmul.c.o: ../src/matmul.c
+CMakeFiles/matmul.dir/src/matmul.c.o: CMakeFiles/matmul.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/Cpp/Project04/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/matmul.dir/src/matmul.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/matmul.dir/src/matmul.c.o -MF CMakeFiles/matmul.dir/src/matmul.c.o.d -o CMakeFiles/matmul.dir/src/matmul.c.o -c /mnt/e/Cpp/Project04/src/matmul.c
 
-CMakeFiles/matmul.dir/benchmark.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/matmul.dir/benchmark.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/e/Cpp/Project04/benchmark.c > CMakeFiles/matmul.dir/benchmark.c.i
+CMakeFiles/matmul.dir/src/matmul.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/matmul.dir/src/matmul.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/e/Cpp/Project04/src/matmul.c > CMakeFiles/matmul.dir/src/matmul.c.i
 
-CMakeFiles/matmul.dir/benchmark.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/matmul.dir/benchmark.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/e/Cpp/Project04/benchmark.c -o CMakeFiles/matmul.dir/benchmark.c.s
+CMakeFiles/matmul.dir/src/matmul.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/matmul.dir/src/matmul.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/e/Cpp/Project04/src/matmul.c -o CMakeFiles/matmul.dir/src/matmul.c.s
 
-CMakeFiles/matmul.dir/matmul.c.o: CMakeFiles/matmul.dir/flags.make
-CMakeFiles/matmul.dir/matmul.c.o: ../matmul.c
-CMakeFiles/matmul.dir/matmul.c.o: CMakeFiles/matmul.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/Cpp/Project04/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/matmul.dir/matmul.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/matmul.dir/matmul.c.o -MF CMakeFiles/matmul.dir/matmul.c.o.d -o CMakeFiles/matmul.dir/matmul.c.o -c /mnt/e/Cpp/Project04/matmul.c
+CMakeFiles/matmul.dir/src/matrix.c.o: CMakeFiles/matmul.dir/flags.make
+CMakeFiles/matmul.dir/src/matrix.c.o: ../src/matrix.c
+CMakeFiles/matmul.dir/src/matrix.c.o: CMakeFiles/matmul.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/Cpp/Project04/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/matmul.dir/src/matrix.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/matmul.dir/src/matrix.c.o -MF CMakeFiles/matmul.dir/src/matrix.c.o.d -o CMakeFiles/matmul.dir/src/matrix.c.o -c /mnt/e/Cpp/Project04/src/matrix.c
 
-CMakeFiles/matmul.dir/matmul.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/matmul.dir/matmul.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/e/Cpp/Project04/matmul.c > CMakeFiles/matmul.dir/matmul.c.i
+CMakeFiles/matmul.dir/src/matrix.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/matmul.dir/src/matrix.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/e/Cpp/Project04/src/matrix.c > CMakeFiles/matmul.dir/src/matrix.c.i
 
-CMakeFiles/matmul.dir/matmul.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/matmul.dir/matmul.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/e/Cpp/Project04/matmul.c -o CMakeFiles/matmul.dir/matmul.c.s
+CMakeFiles/matmul.dir/src/matrix.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/matmul.dir/src/matrix.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/e/Cpp/Project04/src/matrix.c -o CMakeFiles/matmul.dir/src/matrix.c.s
 
 # Object files for target matmul
 matmul_OBJECTS = \
-"CMakeFiles/matmul.dir/matrix.c.o" \
-"CMakeFiles/matmul.dir/benchmark.c.o" \
-"CMakeFiles/matmul.dir/matmul.c.o"
+"CMakeFiles/matmul.dir/src/benchmark.c.o" \
+"CMakeFiles/matmul.dir/src/matmul.c.o" \
+"CMakeFiles/matmul.dir/src/matrix.c.o"
 
 # External object files for target matmul
 matmul_EXTERNAL_OBJECTS =
 
-matmul: CMakeFiles/matmul.dir/matrix.c.o
-matmul: CMakeFiles/matmul.dir/benchmark.c.o
-matmul: CMakeFiles/matmul.dir/matmul.c.o
+matmul: CMakeFiles/matmul.dir/src/benchmark.c.o
+matmul: CMakeFiles/matmul.dir/src/matmul.c.o
+matmul: CMakeFiles/matmul.dir/src/matrix.c.o
 matmul: CMakeFiles/matmul.dir/build.make
 matmul: /usr/local/lib/libopenblas.a
 matmul: /usr/lib/gcc/x86_64-linux-gnu/11/libgomp.so

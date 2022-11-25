@@ -4,7 +4,7 @@
 # compile C with /usr/bin/cc
 C_DEFINES = 
 
-C_INCLUDES = 
+C_INCLUDES = -I/mnt/e/Cpp/Project04/./inc
 
 C_FLAGS = -O3 -lopenblas -fopenmp
 

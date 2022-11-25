@@ -129,77 +129,77 @@ matmul/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/build
 .PHONY : matmul/fast
 
-benchmark.o: benchmark.c.o
-.PHONY : benchmark.o
+src/benchmark.o: src/benchmark.c.o
+.PHONY : src/benchmark.o
 
 # target to build an object file
-benchmark.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/benchmark.c.o
-.PHONY : benchmark.c.o
+src/benchmark.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/benchmark.c.o
+.PHONY : src/benchmark.c.o
 
-benchmark.i: benchmark.c.i
-.PHONY : benchmark.i
+src/benchmark.i: src/benchmark.c.i
+.PHONY : src/benchmark.i
 
 # target to preprocess a source file
-benchmark.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/benchmark.c.i
-.PHONY : benchmark.c.i
+src/benchmark.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/benchmark.c.i
+.PHONY : src/benchmark.c.i
 
-benchmark.s: benchmark.c.s
-.PHONY : benchmark.s
+src/benchmark.s: src/benchmark.c.s
+.PHONY : src/benchmark.s
 
 # target to generate assembly for a file
-benchmark.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/benchmark.c.s
-.PHONY : benchmark.c.s
+src/benchmark.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/benchmark.c.s
+.PHONY : src/benchmark.c.s
 
-matmul.o: matmul.c.o
-.PHONY : matmul.o
+src/matmul.o: src/matmul.c.o
+.PHONY : src/matmul.o
 
 # target to build an object file
-matmul.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/matmul.c.o
-.PHONY : matmul.c.o
+src/matmul.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/matmul.c.o
+.PHONY : src/matmul.c.o
 
-matmul.i: matmul.c.i
-.PHONY : matmul.i
+src/matmul.i: src/matmul.c.i
+.PHONY : src/matmul.i
 
 # target to preprocess a source file
-matmul.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/matmul.c.i
-.PHONY : matmul.c.i
+src/matmul.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/matmul.c.i
+.PHONY : src/matmul.c.i
 
-matmul.s: matmul.c.s
-.PHONY : matmul.s
+src/matmul.s: src/matmul.c.s
+.PHONY : src/matmul.s
 
 # target to generate assembly for a file
-matmul.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/matmul.c.s
-.PHONY : matmul.c.s
+src/matmul.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/matmul.c.s
+.PHONY : src/matmul.c.s
 
-matrix.o: matrix.c.o
-.PHONY : matrix.o
+src/matrix.o: src/matrix.c.o
+.PHONY : src/matrix.o
 
 # target to build an object file
-matrix.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/matrix.c.o
-.PHONY : matrix.c.o
+src/matrix.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/matrix.c.o
+.PHONY : src/matrix.c.o
 
-matrix.i: matrix.c.i
-.PHONY : matrix.i
+src/matrix.i: src/matrix.c.i
+.PHONY : src/matrix.i
 
 # target to preprocess a source file
-matrix.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/matrix.c.i
-.PHONY : matrix.c.i
+src/matrix.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/matrix.c.i
+.PHONY : src/matrix.c.i
 
-matrix.s: matrix.c.s
-.PHONY : matrix.s
+src/matrix.s: src/matrix.c.s
+.PHONY : src/matrix.s
 
 # target to generate assembly for a file
-matrix.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/matrix.c.s
-.PHONY : matrix.c.s
+src/matrix.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/matrix.c.s
+.PHONY : src/matrix.c.s
 
 # Help Target
 help:
@@ -210,15 +210,15 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... matmul"
-	@echo "... benchmark.o"
-	@echo "... benchmark.i"
-	@echo "... benchmark.s"
-	@echo "... matmul.o"
-	@echo "... matmul.i"
-	@echo "... matmul.s"
-	@echo "... matrix.o"
-	@echo "... matrix.i"
-	@echo "... matrix.s"
+	@echo "... src/benchmark.o"
+	@echo "... src/benchmark.i"
+	@echo "... src/benchmark.s"
+	@echo "... src/matmul.o"
+	@echo "... src/matmul.i"
+	@echo "... src/matmul.s"
+	@echo "... src/matrix.o"
+	@echo "... src/matrix.i"
+	@echo "... src/matrix.s"
 .PHONY : help
 
 

@@ -6,10 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 add_compile_options(-O3)
 add_compile_options(-lopenblas)
 
-include_directories(/usr/local/include)
+include_directories(/usr/local/include ./inc)
 link_libraries(/usr/local/lib/libopenblas.a)
 
-add_executable(matmul matrix.h matrix.c benchmark.c matmul.h matmul.c)
+aux_source_directory(./src DIR_SRC)
+
+add_executable(matmul ${DIR_SRC})
 
 find_package(OpenMP)
 if(OpenMP_C_FOUND)
