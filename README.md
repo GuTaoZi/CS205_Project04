@@ -340,4 +340,160 @@ bool matmul_avx_vec8(Matrix *src1, Matrix *src2, Matrix *dst)
 
 由于计算对象矩阵默认阶数为8的倍数，因此可以将8个连续的元素使用`__m256`进行合并，再进行批量乘法。在使用了`OpenMP`并行优化的基础上，进行维数为8的向量乘法代替8次串行的逐元素运算，将效率再次大幅提高。
 
-### 
+![向量化](https://s2.loli.net/2022/11/26/xqpjyZkn4iAw8R9.png)
+
+### 8×8分块SIMD优化
+
+```cpp
+bool matmul_avx_block8(Matrix *src1, Matrix *src2, Matrix *dst)
+{
+    if (!safe_check(src1, src2, dst))
+    {
+        return false;
+    }
+    register size_t n = src1->row;
+    float *data1 = src1->data;
+    float *data2 = src2->data;
+    float *data3 = dst->data;
+
+#pragma omp parallel for
+    for (register size_t i = 0; i < n; i += 8)
+    {
+        for (register size_t j = 0; j < n; j += 8)
+        {
+            for (register size_t k = 0; k < n; k += 8)
+            {
+                for (register size_t u = i; u < i + 8; u++)
+                {
+                    __m256 a_1 = _mm256_set1_ps(data1[u * n + j]);
+                    __m256 a_2 = _mm256_set1_ps(data1[u * n + j + 1]);
+                    __m256 a_3 = _mm256_set1_ps(data1[u * n + j + 2]);
+                    __m256 a_4 = _mm256_set1_ps(data1[u * n + j + 3]);
+                    __m256 a_5 = _mm256_set1_ps(data1[u * n + j + 4]);
+                    __m256 a_6 = _mm256_set1_ps(data1[u * n + j + 5]);
+                    __m256 a_7 = _mm256_set1_ps(data1[u * n + j + 6]);
+                    __m256 a_8 = _mm256_set1_ps(data1[u * n + j + 7]);
+
+                    __m256 b_1 = _mm256_loadu_ps(data2 + j * n + k);
+                    __m256 b_2 = _mm256_loadu_ps(data2 + (j + 1) * n + k);
+                    __m256 b_3 = _mm256_loadu_ps(data2 + (j + 2) * n + k);
+                    __m256 b_4 = _mm256_loadu_ps(data2 + (j + 3) * n + k);
+                    __m256 b_5 = _mm256_loadu_ps(data2 + (j + 4) * n + k);
+                    __m256 b_6 = _mm256_loadu_ps(data2 + (j + 5) * n + k);
+                    __m256 b_7 = _mm256_loadu_ps(data2 + (j + 6) * n + k);
+                    __m256 b_8 = _mm256_loadu_ps(data2 + (j + 7) * n + k);
+
+                    b_1 = _mm256_mul_ps(b_1, a_1);
+                    b_2 = _mm256_mul_ps(b_2, a_2);
+                    b_3 = _mm256_mul_ps(b_3, a_3);
+                    b_4 = _mm256_mul_ps(b_4, a_4);
+                    b_5 = _mm256_mul_ps(b_5, a_5);
+                    b_6 = _mm256_mul_ps(b_6, a_6);
+                    b_7 = _mm256_mul_ps(b_7, a_7);
+                    b_8 = _mm256_mul_ps(b_8, a_8);
+
+                    __m256 t_1 = _mm256_add_ps(b_1, b_2);
+                    __m256 t_2 = _mm256_add_ps(b_3, b_4);
+                    __m256 t_3 = _mm256_add_ps(b_5, b_6);
+                    __m256 t_4 = _mm256_add_ps(b_7, b_8);
+
+                    __m256 t_5 = _mm256_add_ps(t_1, t_2);
+                    __m256 t_6 = _mm256_add_ps(t_3, t_4);
+                    __m256 t_7 = _mm256_add_ps(t_5, t_6);
+
+                    __m256 t_c = _mm256_loadu_ps(data3 + u * n + k);
+                    __m256 t_8 = _mm256_add_ps(t_7, t_c);
+
+                    _mm256_storeu_ps(data3 + u * n + k, t_8);
+                }
+            }
+        }
+    }
+    return true;
+}
+```
+
+![image.png](https://s2.loli.net/2022/11/26/GlN51cUPIfbYRAj.png)
+
+这是上述计算过程的图像解释，我们每次将$B$中的8个元素合并载入`__mm256`，再将$A$中的单个元素广播载入`__mm256`，二者批量相乘后再累加至对应8个元素中，通过u的循环就可以得到8×8分块的值。
+
+为了便于说明，我们以4×4的例子入手讲解，以下是计算`C[0][0..3]`的式子
+
+```cpp
+C0[0]+=A0[0]+B0[0]	C0[0]+=A0[1]+B1[0]	C0[0]+=A0[2]+B2[0]	C0[0]+=A0[3]+B3[0]
+C0[1]+=A0[0]+B0[1]	C0[1]+=A0[1]+B1[1]	C0[1]+=A0[2]+B2[1]	C0[1]+=A0[3]+B3[1]
+C0[2]+=A0[0]+B0[2]	C0[2]+=A0[1]+B1[2]	C0[2]+=A0[2]+B2[2]	C0[2]+=A0[3]+B3[2]
+C0[3]+=A0[0]+B0[3]	C0[3]+=A0[1]+B1[3]	C0[3]+=A0[2]+B2[3]	C0[3]+=A0[3]+B3[3]
+```
+
+对于朴素乘法，我们对上述16个式子是“行优先”执行的，但如果按“列优先”的视角重排后，我们发现A可以一次性载入用作输出的计算，对于B则逐行拆分使用。利用AVX指令集，我们将四个元素的访存与计算向量化，则能达到提高效率的目的。
+
+![image.png](https://s2.loli.net/2022/11/27/sv3hRyKUmHkXWZS.png)
+
+### <pthread.h>多线程
+
+```cpp
+#include <pthread.h>
+
+struct PartialMatMulParams
+{
+    size_t fromColumn, toColum, n;
+    float *a, *b, *c;
+};
+
+void *partialMatMul(void *params)
+{
+    struct PartialMatMulParams *p = (struct PartialMatMulParams *)params;
+    size_t n = p->n;
+    float *a = p->a;
+    float *b = p->b;
+    float *c = p->c;
+
+#pragma omp parallel for
+    for (size_t i = p->fromColumn; i < p->toColum; i++)
+    {
+        for (size_t j = 0; j < n; j++)
+        {
+            for (size_t k = 0; k < n; k++)
+            {
+                c[j * n + i] += a[j * n + k] * b[k * n + i];
+            }
+        }
+    }
+    return NULL;
+}
+
+bool matmul_thread(Matrix *src1, Matrix *src2, Matrix *dst, size_t num_threads)
+{
+    if (!safe_check(src1, src2, dst))
+    {
+        return false;
+    }
+    register size_t n = src1->row;
+    float *data1 = src1->data;
+    float *data2 = src2->data;
+    float *data3 = dst->data;
+    pthread_t *threads = malloc(sizeof(pthread_t) * num_threads);
+    struct PartialMatMulParams *params = malloc(sizeof(struct PartialMatMulParams) * num_threads);
+
+    for (size_t i = 0; i < num_threads; i++)
+    {
+        params[i].a = data1;
+        params[i].b = data2;
+        params[i].c = data3;
+        params[i].n = n;
+
+        params[i].fromColumn = i * (n / num_threads);
+        params[i].toColum = (i + 1) * (n / num_threads);
+        pthread_create(&threads[i], NULL, partialMatMul, &params[i]);
+    }
+    for (size_t i = 0; i < num_threads; i++)
+    {
+        pthread_join(threads[i], NULL);
+    }
+    free(threads);
+    free(params);
+}
+```
+
+以上函数是笔者对于`<pthread.h>`库的实验品，在浅略阅读相关讲解与教程后所写，在实际运行测试中，虽然能正确得到结果，但以16线程运行的效率甚至低于无优化的朴素算法，且笔者对于该库的线程安全问题并不了解，因此仅作为学习过程的副产品，不参与后续效率比较。
