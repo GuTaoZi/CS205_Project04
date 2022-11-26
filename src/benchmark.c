@@ -19,22 +19,36 @@ int main()
     Matrix *A = createMatFromArr(n, n, t);
     Matrix *B = createMatFromArr(n, n, t);
     Matrix *C = createMat(n, n);
+    Matrix *D = createMat(n, n);
+
     matmul_plain(A, B, C);
-    memset(C->data, 0, sizeof(float) * nn);
     matmul_plain(A, B, C);
+
     memset(C->data, 0, sizeof(float) * nn);
     double time1 = omp_get_wtime();
     matmul_plain(A, B, C);
     double time2 = omp_get_wtime();
     printf("[Plain] %ld ms used\n", (long int)(1000 * (time2 - time1)));
 
-    memset(C->data, 0, sizeof(float) * nn);
-    matmul_improved(A, B, C);
-    memset(C->data, 0, sizeof(float) * nn);
-    matmul_improved(A, B, C);
+    matmul_divide(A,B,D);
+    matmul_divide(A,B,D);
+    memset(D->data, 0, sizeof(float) * nn);
+    time1 = omp_get_wtime();
+    matmul_divide(A, B, D);
+    time2 = omp_get_wtime();
+    printf("[Divide] %ld ms used\n", (long int)(1000 * (time2 - time1)));
+    printf(equals(C, D) ? "Result Accepted.\n" : "Wrong Result.\n");
+    memset(D->data, 0, sizeof(float) * nn);
+
+    matmul_strassen(A,B,D);
+    printf(equals(C, D) ? "Result Accepted.\n" : "Wrong Result.\n");
+
+    matmul_omp(A, B, C);
+    matmul_omp(A, B, C);
+
     memset(C->data, 0, sizeof(float) * nn);
     time1 = omp_get_wtime();
-    matmul_improved(A, B, C);
+    matmul_omp(A, B, C);
     time2 = omp_get_wtime();
     printf("[OpenMP] %ld ms used\n", (long int)(1000 * (time2 - time1)));
 
@@ -46,6 +60,7 @@ int main()
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, n, n, n, 1.0, t, n, t, n, 0.0, res, n);
     time2 = omp_get_wtime();
     printf("[OpenBLAS] %ld ms used\n", (long int)(1000 * (time2 - time1)));
-    Matrix *D = createMatFromArr(n, n, res);
+
+    D = createMatFromArr(n, n, res);
     printf(equals(C, D) ? "Result Accepted.\n" : "Wrong Result.\n");
 }

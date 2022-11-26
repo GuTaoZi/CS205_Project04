@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/matmul.dir/src/matmul.c.o.d"
   "CMakeFiles/matmul.dir/src/matrix.c.o"
   "CMakeFiles/matmul.dir/src/matrix.c.o.d"
+  "CMakeFiles/matmul.dir/src/strassen.c.o"
+  "CMakeFiles/matmul.dir/src/strassen.c.o.d"
   "matmul"
   "matmul.pdb"
 )

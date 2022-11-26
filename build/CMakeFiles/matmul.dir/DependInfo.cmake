@@ -11,6 +11,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/mnt/e/Cpp/Project04/src/benchmark.c" "CMakeFiles/matmul.dir/src/benchmark.c.o" "gcc" "CMakeFiles/matmul.dir/src/benchmark.c.o.d"
   "/mnt/e/Cpp/Project04/src/matmul.c" "CMakeFiles/matmul.dir/src/matmul.c.o" "gcc" "CMakeFiles/matmul.dir/src/matmul.c.o.d"
   "/mnt/e/Cpp/Project04/src/matrix.c" "CMakeFiles/matmul.dir/src/matrix.c.o" "gcc" "CMakeFiles/matmul.dir/src/matrix.c.o.d"
+  "/mnt/e/Cpp/Project04/src/strassen.c" "CMakeFiles/matmul.dir/src/strassen.c.o" "gcc" "CMakeFiles/matmul.dir/src/strassen.c.o.d"
   )
 
 # Targets to which this target links.

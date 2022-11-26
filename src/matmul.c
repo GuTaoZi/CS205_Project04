@@ -1,4 +1,5 @@
 #include "matmul.h"
+#include <immintrin.h>
 
 bool safe_check(Matrix *src1, Matrix *src2, Matrix *dst)
 {
@@ -68,19 +69,53 @@ bool matmul_plain(Matrix *src1, Matrix *src2, Matrix *dst)
     return true;
 }
 
-bool multiply_strassen(Matrix *src1, Matrix *src2, Matrix *dst);
-
-bool matmul_improved(Matrix *src1, Matrix *src2, Matrix *dst)
+bool matmul_divide(Matrix *src1, Matrix *src2, Matrix *dst)
 {
     if (!safe_check(src1, src2, dst))
     {
         return false;
     }
     size_t n = src1->row;
-    size_t k,j;
+    size_t k, j;
+    float *data1 = src1->data;
+    float *data2 = src2->data;
+    float *data3 = dst->data;
+#pragma omp parallel
+    for (size_t i = 0; i < n; i += 4)
+    {
+#pragma omp for private(k, j)
+        for (j = 0; j < n; j += 4)
+        {
+            for (k = 0; k < n; k += 4)
+            {
+                for (size_t i2 = 0; i2 < 4; i2++)
+                {
+                    for (size_t j2 = 0; j2 < 4; j2++)
+                    {
+                        for (size_t k2 = 0; k2 < 4; k2++)
+                        {
+                            data3[(i + i2) * n + (j + j2)] += data1[(i + i2) * n + (k + k2)] * data2[(k + k2) * n + (j + j2)];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+bool matmul_omp(Matrix *src1, Matrix *src2, Matrix *dst)
+{
+    if (!safe_check(src1, src2, dst))
+    {
+        return false;
+    }
+    size_t n = src1->row;
+    size_t k, j;
 #pragma omp parallel
     {
-        #pragma omp for private(k,j)
+#pragma omp for private(k, j)
         for (size_t i = 0; i < n; i++)
         {
             size_t i_n = i * n;
