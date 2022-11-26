@@ -46,6 +46,19 @@ bool safe_check(Matrix *src1, Matrix *src2, Matrix *dst)
     return true;
 }
 
+float *transpose(float *src, size_t n)
+{
+    float *res = malloc(sizeof(float) * n * n);
+    for (size_t i = 0; i < n; i++)
+    {
+        for (size_t j = 0; j < n; j++)
+        {
+            res[j * n + i] = src[i * n + j];
+        }
+    }
+    return res;
+}
+
 bool matmul_plain(Matrix *src1, Matrix *src2, Matrix *dst)
 {
     if (!safe_check(src1, src2, dst))
@@ -78,7 +91,7 @@ bool matmul_divide(Matrix *src1, Matrix *src2, Matrix *dst)
     size_t n = src1->row;
     size_t k, j;
     float *data1 = src1->data;
-    float *data2 = src2->data;
+    float *data2 = transpose(src2->data, n);
     float *data3 = dst->data;
 #pragma omp parallel
     for (size_t i = 0; i < n; i += 4)
@@ -94,7 +107,7 @@ bool matmul_divide(Matrix *src1, Matrix *src2, Matrix *dst)
                     {
                         for (size_t k2 = 0; k2 < 4; k2++)
                         {
-                            data3[(i + i2) * n + (j + j2)] += data1[(i + i2) * n + (k + k2)] * data2[(k + k2) * n + (j + j2)];
+                            data3[(i + i2) * n + (j + j2)] += data1[(i + i2) * n + (k + k2)] * data2[(k + k2) + (j + j2) * n];
                         }
                     }
                 }
@@ -103,7 +116,34 @@ bool matmul_divide(Matrix *src1, Matrix *src2, Matrix *dst)
     }
 }
 
-
+bool matmul_avx(Matrix *src1, Matrix *src2, Matrix *dst)
+{
+    if (!safe_check(src1, src2, dst))
+    {
+        return false;
+    }
+    size_t n = src1->row;
+    size_t k, j;
+    float *data1 = src1->data;
+    float *data2 = transpose(src2->data, n);
+    float *data3 = dst->data;
+    #pragma omp parallel
+    for (size_t i = 0; i < n; i++)
+    {
+        #pragma omp for private(k, j)
+        for (j = 0; j < n; j++)
+        {
+            __m256 sx = _mm256_setzero_ps();
+            for (k = 0; k < n; k += 8)
+            {
+                sx = _mm256_add_ps(sx, _mm256_mul_ps(_mm256_loadu_ps(data1 + i * n + k), _mm256_loadu_ps(data2 + j * n + k)));
+            }
+            sx = _mm256_add_ps(sx, _mm256_permute2f128_ps(sx, sx, 1));
+            sx = _mm256_hadd_ps(sx, sx);
+            data3[i * n + j] = _mm256_cvtss_f32(_mm256_hadd_ps(sx, sx));
+        }
+    }
+}
 
 bool matmul_omp(Matrix *src1, Matrix *src2, Matrix *dst)
 {
