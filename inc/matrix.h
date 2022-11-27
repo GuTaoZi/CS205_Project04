@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <memory.h>
-//#define float_equal(x, y) ((x-y)<1e-3&&(y-x)<1e-3)
-#define float_equal(x, y) (x==y)
+#define float_equal(x, y) ((x-y)<1e-1&&(y-x)<1e-1)
+// #define float_equal(x, y) (x==y)
 
 typedef struct Matrix_
 {

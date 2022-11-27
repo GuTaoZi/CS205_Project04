@@ -6,5 +6,5 @@ C_DEFINES =
 
 C_INCLUDES = -I/mnt/e/Cpp/Project04/./inc
 
-C_FLAGS = -O2 -mavx2 -lopenblas -fopenmp
+C_FLAGS = -Ofast -mavx2 -lopenblas -fopenmp
 

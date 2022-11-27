@@ -313,11 +313,6 @@ CMakeFiles/matmul.dir/src/matrix.c.o: ../src/matrix.c \
   /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
   /usr/include/x86_64-linux-gnu/bits/string_fortified.h
 
-CMakeFiles/matmul.dir/src/strassen.c.o: ../src/strassen.c \
-  /usr/include/stdc-predef.h
-
-
-../src/strassen.c:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/prfchwintrin.h:
 

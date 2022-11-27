@@ -189,12 +189,10 @@ bool matmul_avx_vec8(Matrix *src1, Matrix *src2, Matrix *dst);
 
 bool matmul_avx_block8(Matrix *src1, Matrix *src2, Matrix *dst);
 
-bool matmul_strassen(Matrix *src1, Matrix *src2, Matrix *dst);
-
 bool matmul_thread(Matrix *src1, Matrix *src2, Matrix *dst, size_t num_threads);
 ```
 
-项目实现了7个矩阵乘法函数，依次为：朴素乘法，4×4分块乘法，`OpenMP`优化朴素乘法，向量点乘级`SIMD`优化朴素乘法，`SIMD`优化8×8分块乘法，`strassen`算法，手动多线程算法(基于`pthread.h`)。
+项目实现了6个矩阵乘法函数，依次为：朴素乘法，4×4分块乘法，`OpenMP`优化朴素乘法，向量点乘级`SIMD`优化朴素乘法，`SIMD`优化8×8分块乘法，手动多线程算法(基于`pthread.h`)。
 
 下文将逐个展开解析优化策略和原理，效率比较部分将在后文体现。
 
@@ -497,3 +495,93 @@ bool matmul_thread(Matrix *src1, Matrix *src2, Matrix *dst, size_t num_threads)
 ```
 
 以上函数是笔者对于`<pthread.h>`库的实验品，在浅略阅读相关讲解与教程后所写，在实际运行测试中，虽然能正确得到结果，但以16线程运行的效率甚至低于无优化的朴素算法，且笔者对于该库的线程安全问题并不了解，因此仅作为学习过程的副产品，不参与后续效率比较。
+
+## Part 3 - Test & Comparison
+
+### 测试说明
+
+`benchmark.c`为本项目测试用代码，其中依次测试了矩阵乘法的各类实现的正确性与耗时。
+
+矩阵尺寸由调试者输入，矩阵元素为随机生成的$[0,1]$的单精度浮点数。
+
+乘法标准答案由`cblas.h`的`cblas_sgemm()`函数输出至矩阵$C$，其余函数输出至$D$并与之比较。
+
+考虑到使用了`OpenMP`提高效率，此处使用`double omp_get_wtime()`计算运行时间，单位为秒。
+
+在运行一个函数前，程序会“预热”两次，即预先运行2次再计时。
+
+下面是以`matmul_avx_block8()`为例的测试片段。
+
+```cpp
+matmul_avx_block8(A, B, D);
+matmul_avx_block8(A, B, D);
+memset(D->data, 0, sizeof(float) * nn);
+time1 = omp_get_wtime();
+matmul_avx_block8(A, B, D);
+time2 = omp_get_wtime();
+printf("[AVX_block+OpenMP] %ld ms used\n", (long int)(1000 * (time2 - time1)));
+printf(equals(C, D) ? "Result Accepted.\n" : "Wrong Result.\n");
+memset(D->data, 0, sizeof(float) * nn);
+```
+
+### x64平台测试结果
+
+笔记本型号：Surface Pro7 ~~孱弱的主动散热~~+外置风扇
+
+系统：Linux version 5.10.16.3(WSL2)，64位系统，基于x64处理器
+
+处理器：Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz   1.50 GHz
+
+时间单位:毫秒(ms)，`0`代表1ms内完成，`/`表示等待时间在作者的耐心之外(超过5分钟)
+
+~~由于要预热，超出5分钟的函数笔者要等15分钟以上~~
+
+#### Without addition compilation option
+
+| 阶数/函数 | plain  | divide | plain+omp | avx_vec8 | avx_block8 | OpenBLAS |
+| --------- | ------ | ------ | --------- | -------- | ---------- | -------- |
+| 16        | 0      | 0      | 0         | 0        | 0          | 0        |
+| 128       | 7      | 7      | 1         | 0        | 30         | 0        |
+| 1024      | 3657   | 1366   | 792       | 194      | 257        | 7        |
+| 2048      | 27677  | 11123  | 6783      | 1835     | 1496       | 43       |
+| 4096      | 205834 | 116130 | 61203     | 12968    | 11397      | 395      |
+| 8192      | /      | /      | 543397    | 124802   | 107255     | 2940     |
+| 16384     | /      | /      | /         | /        | /          | 24763    |
+
+#### With -O2
+
+| 阶数/函数 | plain  | divide | plain+omp | avx_vec8 | avx_block8 | OpenBLAS |
+| --------- | ------ | ------ | --------- | -------- | ---------- | -------- |
+| 16        | 0      | 0      | 0         | 0        | 0          | 0        |
+| 128       | 2      | 0      | 0         | 0        | 28         | 0        |
+| 1024      | 515    | 165    | 110       | 32       | 52         | 6        |
+| 2048      | 4746   | 1727   | 933       | 623      | 232        | 46       |
+| 4096      | 34098  | 15463  | 11363     | 5395     | 1765       | 395      |
+| 8192      | 270939 | 139216 | 89797     | 46394    | 14359      | 3015     |
+| 16384     | /      | /      | /         | /        | 196830^    | 24433    |
+
+^: 在测试16384×16384矩阵的avx_block8函数时，即便笔者使用了外置散热手段，还是无法避免CPU长期高负荷计算过热导致的降频，因此该数据效率有明显下降。
+
+#### With -O3
+
+| 阶数/函数 | plain  | divide | plain+omp | avx_vec8 | avx_block8 | OpenBLAS |
+| --------- | ------ | ------ | --------- | -------- | ---------- | -------- |
+| 16        | 0      | 0      | 0         | 0        | 6          | 0        |
+| 128       | 0      | 0      | 0         | 115      | 59         | 2        |
+| 1024      | 134    | 131    | 47        | 112      | 89         | 7        |
+| 2048      | 1648   | 975    | 357       | 607      | 299        | 48       |
+| 4096      | 13601  | 7905   | 3099      | 5386     | 1837       | 388      |
+| 8192      | 112437 | 74809  | 41208     | 44041    | 14188      | 3069     |
+| 16384     | /      | /      | /         | /        | 188428^    | 24325    |
+
+笔者将电脑关闭冷却后，使用-O3编译，发现如下现象：
+
+- 对于阶数在2048以下的矩阵，自行实现的`SIMD`优化函数效率有所下降，而对于较大矩阵，自行实现的`SIMD`优化函数效率基本不变。
+- 未引入手动`SIMD`优化的函数效率有较大提高，但在大规模计算时效率低于`SIMD`优化
+- 又降频了，说明效率门槛从访存速度转移至算力。
+
+随后尝试了-Ofast编译，效果在误差允许范围内与-O3几乎相同。
+
+![image-20221127012543083](C:\Users\first_fan\AppData\Roaming\Typora\typora-user-images\image-20221127012543083.png)
+
+![image-20221127014002130](C:\Users\first_fan\AppData\Roaming\Typora\typora-user-images\image-20221127014002130.png)

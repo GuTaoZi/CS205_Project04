@@ -201,30 +201,6 @@ src/matrix.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/matrix.c.s
 .PHONY : src/matrix.c.s
 
-src/strassen.o: src/strassen.c.o
-.PHONY : src/strassen.o
-
-# target to build an object file
-src/strassen.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/strassen.c.o
-.PHONY : src/strassen.c.o
-
-src/strassen.i: src/strassen.c.i
-.PHONY : src/strassen.i
-
-# target to preprocess a source file
-src/strassen.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/strassen.c.i
-.PHONY : src/strassen.c.i
-
-src/strassen.s: src/strassen.c.s
-.PHONY : src/strassen.s
-
-# target to generate assembly for a file
-src/strassen.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matmul.dir/build.make CMakeFiles/matmul.dir/src/strassen.c.s
-.PHONY : src/strassen.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -243,9 +219,6 @@ help:
 	@echo "... src/matrix.o"
 	@echo "... src/matrix.i"
 	@echo "... src/matrix.s"
-	@echo "... src/strassen.o"
-	@echo "... src/strassen.i"
-	@echo "... src/strassen.s"
 .PHONY : help
 
 

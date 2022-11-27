@@ -3,7 +3,7 @@ project(matmul)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_compile_options(-O2)
+add_compile_options(-Ofast)
 add_compile_options(-mavx2)
 add_compile_options(-lopenblas)
 

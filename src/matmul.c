@@ -195,15 +195,6 @@ bool matmul_avx_block8(Matrix *src1, Matrix *src2, Matrix *dst)
             {
                 for (register size_t u = i; u < i + 8; u++)
                 {
-                    __m256 a_1 = _mm256_set1_ps(data1[u * n + j]);
-                    __m256 a_2 = _mm256_set1_ps(data1[u * n + j + 1]);
-                    __m256 a_3 = _mm256_set1_ps(data1[u * n + j + 2]);
-                    __m256 a_4 = _mm256_set1_ps(data1[u * n + j + 3]);
-                    __m256 a_5 = _mm256_set1_ps(data1[u * n + j + 4]);
-                    __m256 a_6 = _mm256_set1_ps(data1[u * n + j + 5]);
-                    __m256 a_7 = _mm256_set1_ps(data1[u * n + j + 6]);
-                    __m256 a_8 = _mm256_set1_ps(data1[u * n + j + 7]);
-
                     __m256 b_1 = _mm256_loadu_ps(data2 + j * n + k);
                     __m256 b_2 = _mm256_loadu_ps(data2 + (j + 1) * n + k);
                     __m256 b_3 = _mm256_loadu_ps(data2 + (j + 2) * n + k);
@@ -212,6 +203,15 @@ bool matmul_avx_block8(Matrix *src1, Matrix *src2, Matrix *dst)
                     __m256 b_6 = _mm256_loadu_ps(data2 + (j + 5) * n + k);
                     __m256 b_7 = _mm256_loadu_ps(data2 + (j + 6) * n + k);
                     __m256 b_8 = _mm256_loadu_ps(data2 + (j + 7) * n + k);
+
+                    __m256 a_1 = _mm256_set1_ps(data1[u * n + j]);
+                    __m256 a_2 = _mm256_set1_ps(data1[u * n + j + 1]);
+                    __m256 a_3 = _mm256_set1_ps(data1[u * n + j + 2]);
+                    __m256 a_4 = _mm256_set1_ps(data1[u * n + j + 3]);
+                    __m256 a_5 = _mm256_set1_ps(data1[u * n + j + 4]);
+                    __m256 a_6 = _mm256_set1_ps(data1[u * n + j + 5]);
+                    __m256 a_7 = _mm256_set1_ps(data1[u * n + j + 6]);
+                    __m256 a_8 = _mm256_set1_ps(data1[u * n + j + 7]);
 
                     b_1 = _mm256_mul_ps(b_1, a_1);
                     b_2 = _mm256_mul_ps(b_2, a_2);
@@ -222,19 +222,19 @@ bool matmul_avx_block8(Matrix *src1, Matrix *src2, Matrix *dst)
                     b_7 = _mm256_mul_ps(b_7, a_7);
                     b_8 = _mm256_mul_ps(b_8, a_8);
 
-                    __m256 t_1 = _mm256_add_ps(b_1, b_2);
-                    __m256 t_2 = _mm256_add_ps(b_3, b_4);
-                    __m256 t_3 = _mm256_add_ps(b_5, b_6);
-                    __m256 t_4 = _mm256_add_ps(b_7, b_8);
+                    __m256 temp_1 = _mm256_add_ps(b_1, b_2);
+                    __m256 temp_2 = _mm256_add_ps(b_3, b_4);
+                    __m256 temp_3 = _mm256_add_ps(b_5, b_6);
+                    __m256 temp_4 = _mm256_add_ps(b_7, b_8);
 
-                    __m256 t_5 = _mm256_add_ps(t_1, t_2);
-                    __m256 t_6 = _mm256_add_ps(t_3, t_4);
-                    __m256 t_7 = _mm256_add_ps(t_5, t_6);
+                    __m256 temp_5 = _mm256_add_ps(temp_1, temp_2);
+                    __m256 temp_6 = _mm256_add_ps(temp_3, temp_4);
+                    __m256 temp_7 = _mm256_add_ps(temp_5, temp_6);
 
-                    __m256 t_c = _mm256_loadu_ps(data3 + u * n + k);
-                    __m256 t_8 = _mm256_add_ps(t_7, t_c);
+                    __m256 temp_c = _mm256_loadu_ps(data3 + u * n + k);
+                    __m256 temp_8 = _mm256_add_ps(temp_7, temp_c);
 
-                    _mm256_storeu_ps(data3 + u * n + k, t_8);
+                    _mm256_storeu_ps(data3 + u * n + k, temp_8);
                 }
             }
         }
@@ -303,5 +303,3 @@ bool matmul_avx_block8(Matrix *src1, Matrix *src2, Matrix *dst)
 //     free(threads);
 //     free(params);
 // }
-
-
