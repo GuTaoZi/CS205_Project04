@@ -1,4 +1,4 @@
-- $\LaTeX$ of README.md may fail to display on GitHub. For better experience, pls check [report in pdf format.](https://github.com/GuTaoZi/CS205_Project03/blob/master/doc/Report.pdf)
+- $\LaTeX$ of README.md may fail to display on GitHub. For better experience, pls check [report in pdf format.](https://github.com/GuTaoZi/CS205_Project04/blob/master/doc/Report.pdf)
 
 # CS205 C/ C++ Programming Project04 
 
@@ -10,7 +10,24 @@
 
 ### 项目结构
 
-```
+```cpp
+CS205_Project04
+│  CMakeLists.txt
+│  README.md
+│
+├─build
+│	   //makefile here
+├─doc
+│      Report.pdf
+│
+├─inc
+│      matmul.h
+│      matrix.h
+│
+└─src
+        benchmark.c
+        matmul.c
+        matrix.c
 ```
 
 ## Part 1 - Analysis
@@ -504,7 +521,7 @@ bool matmul_thread(Matrix *src1, Matrix *src2, Matrix *dst, size_t num_threads)
 
 矩阵尺寸由调试者输入，矩阵元素为随机生成的$[0,1]$的单精度浮点数。
 
-乘法标准答案由`cblas.h`的`cblas_sgemm()`函数输出至矩阵$C$，其余函数输出至$D$并与之比较。
+乘法标准答案由`cblas.h`的`cblas_sgemm()`函数输出至矩阵$C$，其余函数输出至$D$并与之比较，会打印出首次误差情况。
 
 考虑到使用了`OpenMP`提高效率，此处使用`double omp_get_wtime()`计算运行时间，单位为秒。
 
@@ -582,6 +599,94 @@ memset(D->data, 0, sizeof(float) * nn);
 
 随后尝试了-Ofast编译，效果在误差允许范围内与-O3几乎相同。
 
-![image-20221127012543083](C:\Users\first_fan\AppData\Roaming\Typora\typora-user-images\image-20221127012543083.png)
+### 图表比较
 
-![image-20221127014002130](C:\Users\first_fan\AppData\Roaming\Typora\typora-user-images\image-20221127014002130.png)
+下图是矩阵乘法的不同实现对于各规模矩阵的用时柱状图，单位ms，超时部分未画出。
+
+为了方便观察比较，此处对时间取`log2`对数，得到右侧各图。
+
+自行实现的各算法中，开启`-O2`时耗时比约为：
+
+$$T_{plain}≈1.95T_{divide}≈3.01T_{plain+omp}≈5.83T_{avx\_vec8}≈18.87T_{avx\_block8}≈89.86T_{OpenBLAS}$$
+
+由上述原因，只看n=16384时，自行实现的最快算法`avx_block8`耗时也达到了OpenBLAS的8倍左右，但在其他规模下，`avx__block8`可以达到OpenBLAS的4~5倍。
+
+由右侧各图可以观察到，在开启`-O2`编译后，`avx_block8`的`log2(time)`与`OpenBLAS`相差只有2左右，即达到了约1/4的效率。
+
+![Plain](https://s2.loli.net/2022/11/27/ABndj2HIe15kpzU.png)
+
+
+
+![with O2](https://s2.loli.net/2022/11/27/RpjzcnNgLvCIUwH.png)
+
+![O3](https://s2.loli.net/2022/11/27/Fv2xEQBUVMs5g4m.png)
+
+### ARM平台测试结果
+
+
+
+
+
+## Part 4 - Difficulties & Solutions
+
+#### Difficulty I. 误差处理
+
+笔者在测试时发现，对于规模在2048以上的矩阵乘法，很容易产生`0.001`的误差，(通常是OpenBLAS与自己实现的不同，而自己实现的几个往往成对相同)。下图是某个凌晨一点钟，没开风扇降频跑16k规模矩阵时得到的结果。
+
+<img src="https://s2.loli.net/2022/11/27/c2mNhHgYivPzoEk.png" alt="image-20221127014002130.png" style="zoom: 50%;" />
+
+#### Solution
+
+经同学提醒，可以将误差设置为数据的1‰而非0.001，这样的误差要求对于进行了很多次加、乘法得到的结果也都是可以接受的。
+
+不过为了比较时的效率，`benchmark.c`依然采用旧版比较，适当放宽误差到`0.01`时可以验证乘法的正确性，既然保证了正确性，精确到哪一位才算正确似乎也没有那么重要了。
+
+```cpp
+#define float_equal(x, y) ((x - y) < 1e-3 && (y - x) < 1e-3) //old
+#define mx(x, y) ((x) > (y) ? (x) : (y))
+#define float_equal2(x, y) (x > y ? (x - y < mx(x, 1) * 1e-3) : (y - x < mx(y, 1) * 1e-3)) // new
+```
+
+#### Difficulty II. Strassen
+
+与同学讨论的过程中，笔者了解到$O(N^{lg7})≈O(N^{2.81})$复杂度的`Strassen`算法，并且尝试自己写了一下，通过了正确性测试，但效率非常悲观，仅比朴素略快一筹。
+
+#### Solution
+
+随后笔者分析了原因：`Strassen`算法将矩阵运算中的8次子矩阵乘法与4次子矩阵加法，分别变为了7次和18次，即以额外的14次加法为代价减少一次乘法，在阶数很高时才能体现差距，且笔者在实现Strassen时并未使用`SIMD`进行加速，导致加法运算并未得到很好的优化，而分治的截取、合并等操作导致内存访问的跳跃数较高，虽然从软件层面降低了复杂度，但在硬件层面增大了操作复杂性。
+
+另外，该算法的优化幅度为$O(N^{0.19})$，而当$N=16384$时，也只有理论上限6.32倍的提升，矩阵规模越小优化越不明显。加上访问不连续、矩阵分块等操作带来的额外复杂度，总体呈现负优化。也许加上合适的`SIMD`优化能提高其效率。
+
+#### Difficulty III. Segmentation Fault
+
+`SIMD`优化过程中屡次出现段错误，笔者试图使用`memalign`函数在创建矩阵时将`data`对齐，粒度设置为32，以便后续的load等操作，但发现写入数据时会导致段错误。
+
+#### Solution
+
+查询`memalign`的用法后发现并无异常，但就是无法对申请的内存进行正常读写，于是笔者推测可能是申请的空间过大，无法通过该函数申请到一块连续、对齐的内存用于存储数据，导致并未将data指向一段合法内存，因此读写时会段错误。考虑到申请如此大块的内存的确不太现实，笔者选择在载入时牺牲一定效率，换用`loadu_ps`来对未对齐的数据进行载入，效率还算不错，借此实现了本项目最快的函数，对齐后也许还能更快。
+
+#### Difficulty IV. 64k×64k
+
+一个float四字节，$64k×64k=2^{32}=4,294,967,296$个元素，也就是对于仅一个64k阶矩阵，就要为`data`指针分配$2^{32}×4/1024^3=16GB$内存，实在是有点难为渣机了。而对于运行内存1GB，内置存储8GB的EAIDK310而言，条件会更加苛刻。
+
+#### Solution
+
+办法总比问题多，但效果不一定好。对于如此巨大的矩阵，我们可以将其写入文件，在访问某块元素时再读取载入进行运算，运算后写回文件。笔者不得不承认这是一个办法，但对于能存下的矩阵，运算耗时也已经到了难以等待的程度，如果在每次读写元素时再加上文件操作时间，恐怕要等到天荒地老、海枯石烂了，因此虽然能这样解决，但并没有必要。
+
+## Part 5 - Summary & Blooper
+
+首先，感谢您能读到这里，该部分是对项目开发过程的总结与花絮的分享。
+
+本项目在尝试了若干种优化方法后，结合`OpenMP`、`SIMD`和分块等方法对矩阵乘法进行了不同程度的优化，将耗时门槛从访存转移到了计算，效率达到了`OpenBLAS`的1/4左右。
+
+由于笔者的电脑只有一块`Intel Iris Plus Graphics`核显，且本次项目的大致重心在于如何最大限度利用CPU进行矩阵乘法的运算，笔者几乎用尽解数才写出了本项目最快的函数，然而与`OpenBLAS`依然相差甚远，大约可以理解于老师当年与完备的库相比时感受到的“绝望”的感觉了。不过想想那个项目无论从开发周期还是开发团队都远超这个用时二十余小时的单人项目，内心倒也释然许多。
+
+<img src="https://s2.loli.net/2022/11/27/iXV5fbZHFLzBm71.png" alt="image-20221127012543083.png" style="zoom: 25%;" />
+
+11.27凌晨一点，笔者在测试16k矩阵乘法时，CPU八核顶着高温降频运转，为了等待自己最快的一个函数的运行结果，守在电脑前近二十分钟(预热两次真的很慢)，得到了下面的结果：
+
+<img src="https://s2.loli.net/2022/11/27/c2mNhHgYivPzoEk.png" alt="image-20221127014002130.png" style="zoom: 50%;" />
+
+本来已经完全不抱希望了，但就在快要没耐心的时候程序给出了答案，虽然有一点误差，但当时还是挺感动的。然而第二天在加上外置风扇、酒精喷雾等外置散热的帮助下，效率得到了很大的提升，令人感慨好硬件的重要性。
+
+本次项目兼具技术性和挑战性，还是非常有趣的，~~也让人深刻意识到自己和行业标准的差距~~，此后这门课仅剩一次project，且做且珍惜啦。

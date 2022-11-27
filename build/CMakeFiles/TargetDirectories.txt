@@ -1,3 +1,0 @@
-/mnt/e/Cpp/Project04/build/CMakeFiles/matmul.dir
-/mnt/e/Cpp/Project04/build/CMakeFiles/edit_cache.dir
-/mnt/e/Cpp/Project04/build/CMakeFiles/rebuild_cache.dir

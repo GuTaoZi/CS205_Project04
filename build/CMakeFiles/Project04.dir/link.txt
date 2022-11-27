@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/Project04.dir/matrix.c.o CMakeFiles/Project04.dir/benchmark.c.o CMakeFiles/Project04.dir/matmul.c.o -o Project04  /usr/local/lib/libopenblas.a 
