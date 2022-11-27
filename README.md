@@ -599,6 +599,8 @@ memset(D->data, 0, sizeof(float) * nn);
 
 随后尝试了-Ofast编译，效果在误差允许范围内与-O3几乎相同。
 
+经过查询
+
 ### 图表比较
 
 下图是矩阵乘法的不同实现对于各规模矩阵的用时柱状图，单位ms，超时部分未画出。
@@ -614,8 +616,6 @@ $$T_{plain}≈1.95T_{divide}≈3.01T_{plain+omp}≈5.83T_{avx\_vec8}≈18.87T_{a
 由右侧各图可以观察到，在开启`-O2`编译后，`avx_block8`的`log2(time)`与`OpenBLAS`相差只有2左右，即达到了约1/4的效率。
 
 ![Plain](https://s2.loli.net/2022/11/27/ABndj2HIe15kpzU.png)
-
-
 
 ![with O2](https://s2.loli.net/2022/11/27/RpjzcnNgLvCIUwH.png)
 

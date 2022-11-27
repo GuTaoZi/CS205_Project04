@@ -1,5 +1,12 @@
 #include "matmul.h"
+
+#ifdef WITH_AVX
 #include <immintrin.h>
+#endif
+
+#ifdef WITH_NEON
+#include <armneon.h>
+#endif
 
 bool safe_check(Matrix *src1, Matrix *src2, Matrix *dst)
 {
@@ -117,7 +124,8 @@ bool matmul_divide(Matrix *src1, Matrix *src2, Matrix *dst)
     return true;
 }
 
-bool matmul_avx_vec8(Matrix *src1, Matrix *src2, Matrix *dst)
+#ifdef WITH_AVX
+bool matmul_SIMD_vec8(Matrix *src1, Matrix *src2, Matrix *dst)
 {
     if (!safe_check(src1, src2, dst))
     {
@@ -146,6 +154,39 @@ bool matmul_avx_vec8(Matrix *src1, Matrix *src2, Matrix *dst)
     }
     return true;
 }
+#endif
+
+#ifdef WITH_NEON
+bool matmul_avx_vec8(Matrix *src1, Matrix *src2, Matrix *dst)
+{
+    if (!safe_check(src1, src2, dst))
+    {
+        return false;
+    }
+    size_t n = src1->row;
+    size_t k, j;
+    float *data1 = src1->data;
+    float *data2 = transpose(src2->data, n);
+    float *data3 = dst->data;
+    float *sum = malloc(sizeof(float) * 4);
+#pragma omp parallel
+    for (size_t i = 0; i < n; i++)
+    {
+#pragma omp for private(k, j)
+        for (j = 0; j < n; j++)
+        {
+            float32x4_t sx = vdupq_n_f32(0.f);
+            for (k = 0; k < n; k += 4)
+            {
+                sx = vmlaq_f32(sx, vld1q_f32(data1 + i * n + k), vld1q_f32(data2 + j * n + k));
+            }
+            vst1q_f32(sum, sx);
+            data3[i * n + j] = (sum[0] + sum[1] + sum[2] + sum[3]);
+        }
+    }
+    return true;
+}
+#endif
 
 bool matmul_omp(Matrix *src1, Matrix *src2, Matrix *dst)
 {
@@ -175,7 +216,8 @@ bool matmul_omp(Matrix *src1, Matrix *src2, Matrix *dst)
     return true;
 }
 
-bool matmul_avx_block8(Matrix *src1, Matrix *src2, Matrix *dst)
+#ifdef WITH_AVX
+bool matmul_SIMD_block8(Matrix *src1, Matrix *src2, Matrix *dst)
 {
     if (!safe_check(src1, src2, dst))
     {
@@ -241,6 +283,60 @@ bool matmul_avx_block8(Matrix *src1, Matrix *src2, Matrix *dst)
     }
     return true;
 }
+#endif
+
+#ifdef WITH_NEON
+bool matmul_SIMD_block8(Matrix *src1, Matrix *src2, Matrix *dst)
+{
+    if (!safe_check(src1, src2, dst))
+    {
+        return false;
+    }
+    register size_t n = src1->row;
+    float *data1 = src1->data;
+    float *data2 = src2->data;
+    float *data3 = dst->data;
+
+#pragma omp parallel for
+    for (register size_t i = 0; i < n; i += 4)
+    {
+        for (register size_t j = 0; j < n; j += 4)
+        {
+            for (register size_t k = 0; k < n; k += 4)
+            {
+                for (register size_t u = i; u < i + 4; u++)
+                {
+                    float32x4_t b_1 = vld1q_f32(data2 + j * n + k);
+                    float32x4_t b_2 = vld1q_f32(data2 + (j + 1) * n + k);
+                    float32x4_t b_3 = vld1q_f32(data2 + (j + 2) * n + k);
+                    float32x4_t b_4 = vld1q_f32(data2 + (j + 3) * n + k);
+
+                    float32x4_t a_1 = vdupq_n_f32(data1[u * n + j]);
+                    float32x4_t a_2 = vdupq_n_f32(data1[u * n + j + 1]);
+                    float32x4_t a_3 = vdupq_n_f32(data1[u * n + j + 2]);
+                    float32x4_t a_4 = vdupq_n_f32(data1[u * n + j + 3]);
+
+                    b_1 = vmulq_f32(b_1, a_1);
+                    b_2 = vmulq_f32(b_2, a_2);
+                    b_3 = vmulq_f32(b_3, a_3);
+                    b_4 = vmulq_f32(b_4, a_4);
+
+                    float32x4_t temp_1 = vaddq_f32(b_1, b_2);
+                    float32x4_t temp_2 = vaddq_f32(b_3, b_4);
+
+                    float32x4_t temp_5 = vaddq_f32(temp_1, temp_2);
+
+                    float32x4_t temp_c = vdupq_n_f32(data3 + u * n + k);
+                    float32x4_t temp_8 = vaddq_f32(temp_7, temp_c);
+                    
+                    vst1q_f32(data3 + u * n + k, temp_8);
+                }
+            }
+        }
+    }
+    return true;
+}
+#endif
 
 // #include <pthread.h>
 

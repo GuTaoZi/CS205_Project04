@@ -31,23 +31,23 @@ int main()
     printf("[OpenBLAS] %ld ms used\n", (long int)(1000 * (time2 - time1)));
     C = createMatFromArr(n, n, res);
 
-   // matmul_avx_block8(A, B, D);
-    //matmul_avx_block8(A, B, D);
+   // matmul_SIMD_block8(A, B, D);
+    //matmul_SIMD_block8(A, B, D);
     memset(D->data, 0, sizeof(float) * nn);
     time1 = omp_get_wtime();
-    matmul_avx_block8(A, B, D);
+    matmul_SIMD_block8(A, B, D);
     time2 = omp_get_wtime();
-    printf("[AVX_block+OpenMP] %ld ms used\n", (long int)(1000 * (time2 - time1)));
+    printf("[SIMD_block+OpenMP] %ld ms used\n", (long int)(1000 * (time2 - time1)));
     printf(equals(C, D) ? "Result Accepted.\n" : "Wrong Result.\n");
     memset(D->data, 0, sizeof(float) * nn);
 
-    //matmul_avx_vec8(A, B, D);
-    //matmul_avx_vec8(A, B, D);
+    //matmul_SIMD_vec8(A, B, D);
+    //matmul_SIMD_vec8(A, B, D);
     memset(D->data, 0, sizeof(float) * nn);
     time1 = omp_get_wtime();
-    matmul_avx_vec8(A, B, D);
+    matmul_SIMD_vec8(A, B, D);
     time2 = omp_get_wtime();
-    printf("[AVX_vec+OpenMP] %ld ms used\n", (long int)(1000 * (time2 - time1)));
+    printf("[SIMD_vec+OpenMP] %ld ms used\n", (long int)(1000 * (time2 - time1)));
     printf(equals(C, D) ? "Result Accepted.\n" : "Wrong Result.\n");
     memset(D->data, 0, sizeof(float) * nn);
 
