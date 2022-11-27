@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.12)
 project(matmul)
 
 set(CMAKE_CXX_STANDARD 17)
 
 add_definitions(-DWITH_AVX)
+#add_definitions(-DWITH_NEON)
 
 add_compile_options(-O2)
 add_compile_options(-mavx2)

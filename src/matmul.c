@@ -5,7 +5,7 @@
 #endif
 
 #ifdef WITH_NEON
-#include <armneon.h>
+#include <arm_neon.h>
 #endif
 
 bool safe_check(Matrix *src1, Matrix *src2, Matrix *dst)
@@ -157,7 +157,7 @@ bool matmul_SIMD_vec8(Matrix *src1, Matrix *src2, Matrix *dst)
 #endif
 
 #ifdef WITH_NEON
-bool matmul_avx_vec8(Matrix *src1, Matrix *src2, Matrix *dst)
+bool matmul_SIMD_vec8(Matrix *src1, Matrix *src2, Matrix *dst)
 {
     if (!safe_check(src1, src2, dst))
     {
@@ -168,13 +168,13 @@ bool matmul_avx_vec8(Matrix *src1, Matrix *src2, Matrix *dst)
     float *data1 = src1->data;
     float *data2 = transpose(src2->data, n);
     float *data3 = dst->data;
-    float *sum = malloc(sizeof(float) * 4);
 #pragma omp parallel
     for (size_t i = 0; i < n; i++)
     {
 #pragma omp for private(k, j)
         for (j = 0; j < n; j++)
         {
+            float *sum = malloc(sizeof(float) * 4);
             float32x4_t sx = vdupq_n_f32(0.f);
             for (k = 0; k < n; k += 4)
             {
@@ -182,6 +182,7 @@ bool matmul_avx_vec8(Matrix *src1, Matrix *src2, Matrix *dst)
             }
             vst1q_f32(sum, sx);
             data3[i * n + j] = (sum[0] + sum[1] + sum[2] + sum[3]);
+            free(sum);
         }
     }
     return true;
@@ -326,8 +327,8 @@ bool matmul_SIMD_block8(Matrix *src1, Matrix *src2, Matrix *dst)
 
                     float32x4_t temp_5 = vaddq_f32(temp_1, temp_2);
 
-                    float32x4_t temp_c = vdupq_n_f32(data3 + u * n + k);
-                    float32x4_t temp_8 = vaddq_f32(temp_7, temp_c);
+                    float32x4_t temp_c = vld1q_f32(data3 + u * n + k);
+                    float32x4_t temp_8 = vaddq_f32(temp_5, temp_c);
                     
                     vst1q_f32(data3 + u * n + k, temp_8);
                 }
